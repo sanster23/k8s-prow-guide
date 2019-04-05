@@ -1,0 +1,3 @@
+appname: flask-app
+image: shekhawatsanjay/flask-app
+replicas: 2
