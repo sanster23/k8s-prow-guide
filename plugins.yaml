@@ -1,0 +1,6 @@
+plugins:
+  sanster23/k8s_prow_flask_cicd:
+  - size
+  - cat
+  - dog
+  - trigger
