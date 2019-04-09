@@ -1,3 +1,17 @@
+tide:
+  queries:
+  - orgs:
+    - sanster23
+    labels:
+    - lgtm
+    - approved
+    missingLabels:
+    - do-not-merge
+    - do-not-merge/hold
+    - do-not-merge/work-in-progress
+    - needs-ok-to-test
+    - needs-rebase
+
 presubmits:
   sanster23/k8s_prow_flask_cicd:
   - name: unit-tests
@@ -10,8 +24,21 @@ presubmits:
     spec:
       containers:
       - image: alpine
-        command:
-        - printenv
+        command: ["ls -la && sleep 300"]
+    max_concurrency: 10
+    branches:
+    - master
+
+postsubmits:
+  sanster23/k8s_prow_flask_cicd:
+  - name: test-postsubmit
+    always_run: true
+    skip_report: false
+    agent: kubernetes
+    spec:
+      containers:
+      - image: alpine
+        command: ["/bin/printenv && ls -la"]
     max_concurrency: 10
     branches:
     - master
