@@ -8,7 +8,7 @@ app = Flask(__name__)
 def main():
 
     myhost = os.uname()[1]
-    return 'Hello world from the other side!!'
+    return 'Hello world from ' + myhost + '!'
 
 
 if __name__ == '__main__':
