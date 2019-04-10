@@ -4,3 +4,13 @@ plugins:
   - cat
   - dog
   - trigger
+  - lifecycle
+  - approve
+  - assign
+  - blunderbuss
+  - help
+  - hold
+  - label
+  - lgtm
+  - wip
+  - skip
