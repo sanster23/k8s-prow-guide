@@ -7,6 +7,7 @@ many different services. In addition to job execution, Prow provides GitHub auto
 enforcement, chat-ops via `/foo` style commands, and automatic PR merging.
 
 #### Prow Components
+
 * **Hook**
     * This is the heart of Prow.
     * Responds to github events and dispatches them to respective plugins.
