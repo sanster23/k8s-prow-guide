@@ -46,7 +46,6 @@ if [[ ${TEST} -eq 1 ]]; then
   python3 testapp.py
 fi
 
-
 # if [[ ${DEPLOY} -eq 1 ]]; then
 #   # Deploy the application and check status if it is deployed properly
 #   echo "Deploying the application...."
