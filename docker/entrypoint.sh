@@ -37,7 +37,7 @@ done
 cd /src/${REPO_OWNER}/${REPO_NAME}/
 
 
-helm init --service-account tiller
+#helm init --service-account default
 
 if [[ ${TEST} -eq 1 ]]; then
   # Run all the test cases.
