@@ -101,3 +101,5 @@ enforcement, chat-ops via `/foo` style commands, and automatic PR merging.
     this will give you a publicly accessible endpoint (in my case)
 
     http://github.sanster23.ultrahook.com
+7. Create a docker hub credentials secret in k8s
+  `kubectl create secret generic docker-creds --from-literal=username=<USERNAME> --from-literal=password=<PASSWORD>`
