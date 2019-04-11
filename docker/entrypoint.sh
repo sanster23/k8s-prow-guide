@@ -50,7 +50,8 @@ fi
 if [[ ${DEPLOY} -eq 1 ]]; then
   # Deploy the application and check status if it is deployed properly
   echo "Deploying the application...."
-  helm install helm_charts/flask-app/
+  # helm install helm_charts/flask-app/
+  kubectl create -f flask_app_kube.yaml
   sleep 5
   check_deployment_status
 fi
@@ -68,7 +69,9 @@ fi
 
 if [[ ${CLEANUP} -eq 1 ]]; then
   echo "Deleting all the deployments....."
-  helm list --all | grep "flask-app" | awk '{print $1}' | xargs helm delete
+  kubectl delete deployment flask-app-dpl
+  kubectl delete svc flask-app-svc
+  # helm list --all | grep "flask-app" | awk '{print $1}' | xargs helm delete
 fi
 
 function check_deployment_status() {
