@@ -56,7 +56,6 @@ fi
 #   check_deployment_status
 # fi
 
-
 if [[ ${RELEASE} -eq 1 ]]; then
   # Create a release build/docker image and push to docker hub
   sha=`git log -n 1 --pretty=format:'%H'`
