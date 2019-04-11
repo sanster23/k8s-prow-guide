@@ -47,14 +47,14 @@ if [[ ${TEST} -eq 1 ]]; then
 fi
 
 
-if [[ ${DEPLOY} -eq 1 ]]; then
-  # Deploy the application and check status if it is deployed properly
-  echo "Deploying the application...."
-  # helm install helm_charts/flask-app/
-  kubectl create -f flask_app_kube.yaml
-  sleep 5
-  check_deployment_status
-fi
+# if [[ ${DEPLOY} -eq 1 ]]; then
+#   # Deploy the application and check status if it is deployed properly
+#   echo "Deploying the application...."
+#   # helm install helm_charts/flask-app/
+#   kubectl create -f flask_app_kube.yaml
+#   sleep 5
+#   check_deployment_status
+# fi
 
 
 if [[ ${RELEASE} -eq 1 ]]; then
@@ -66,20 +66,20 @@ if [[ ${RELEASE} -eq 1 ]]; then
   docker push docker.io/shekhawatsanjay/flask-app:$sha
   docker rmi docker.io/shekhawatsanjay/flask-app:$sha
 fi
-
-if [[ ${CLEANUP} -eq 1 ]]; then
-  echo "Deleting all the deployments....."
-  kubectl delete deployment flask-app-dpl
-  kubectl delete svc flask-app-svc
-  # helm list --all | grep "flask-app" | awk '{print $1}' | xargs helm delete
-fi
-
-function check_deployment_status() {
-  pod=$(kubectl get po | grep "flask-app" | awk '{print $1}')
-  curl http://$pod:5000/
-  if [[ $? -eq 0 ]]; then
-    return 0
-  else
-    return 1
-  fi
-}
+#
+# if [[ ${CLEANUP} -eq 1 ]]; then
+#   echo "Deleting all the deployments....."
+#   kubectl delete deployment flask-app-dpl
+#   kubectl delete svc flask-app-svc
+#   # helm list --all | grep "flask-app" | awk '{print $1}' | xargs helm delete
+# fi
+#
+# function check_deployment_status() {
+#   pod=$(kubectl get po | grep "flask-app" | awk '{print $1}')
+#   curl http://$pod:5000/
+#   if [[ $? -eq 0 ]]; then
+#     return 0
+#   else
+#     return 1
+#   fi
+# }
