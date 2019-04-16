@@ -50,22 +50,13 @@ RUN wget -O /tmp/get_helm.sh \
 RUN helm init --client-only --service-account default
 
 
+# Install docker.
+RUN curl  https://get.docker.com/ | sh
+
 COPY checkout.sh /usr/local/bin
 RUN chmod a+x /usr/local/bin/checkout.sh
 
 COPY run_workflows.sh /usr/local/bin
 RUN chmod a+x /usr/local/bin/run_workflows.sh
-
-# Install docker.
-RUN curl  https://get.docker.com/ | sh
-
-# Install kubectl
-RUN  curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.10.0/bin/linux/amd64/kubectl && \
-    mv kubectl /usr/local/bin && \
-    chmod a+x /usr/local/bin/kubectl
-
-# Install argo
-RUN curl -sSL -o /usr/local/bin/argo https://github.com/argoproj/argo/releases/download/v2.1.1/argo-linux-amd64 && \
-    chmod +x /usr/local/bin/argo
 
 ENTRYPOINT ["/usr/local/bin/run_workflows.sh"]
