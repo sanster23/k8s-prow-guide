@@ -47,7 +47,7 @@ RUN wget -O /tmp/get_helm.sh \
     rm /tmp/get_helm.sh
 
 # Initialize helm
-RUN helm init --client-only
+RUN helm init --client-only --service-account default
 
 
 COPY checkout.sh /usr/local/bin
