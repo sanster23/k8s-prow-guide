@@ -1,0 +1,99 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: {{ required "A valid unique wf name is required" .Values.workflowname }}
+spec:
+  entrypoint: release
+  onExit: exit-handler
+  imagePullSecrets:    # to authenticate to the docker registry
+  - name: regcred
+  volumeClaimTemplates:                 #define volume, same syntax as k8s Pod spec
+  - metadata:
+      name: argo-test-volume                     #name of volume claim
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+  templates:
+  - name: release
+    steps:
+    - - name: checkout
+        template: checkout
+    - - name: build-container
+        template: build
+    - - name: deploy
+        template: deploy
+  - container:
+      command:
+      - /usr/local/bin/checkout.sh
+      - /mnt/test-data-volume/src
+      env:
+      - name: PULL_NUMBER
+        value: "{{ .Values.pull_number }}"
+      - name: REPO_NAME
+        value: "{{ .Values.repo_name }}"
+      - name: REPO_OWNER
+        value: "{{ .Values.repo_owner }}"
+      - name: BUILD_NUMBER
+        value: "{{ .Values.build_number }}"
+      image: docker.io/shekhawatsanjay/prow-ci-test
+      volumeMounts:
+      - mountPath: /mnt/test-data-volume
+        name: argo-test-volume
+    name: checkout
+  - container:
+      command:
+      - sh
+      - -c
+      - "sha=`git log -n 1 --pretty=format:'%H'` && until docker ps; do sleep 3; done && docker login --username $docker_username --password $docker_password && docker build . -t docker.io/shekhawatsanjay/flask-app:$sha && docker push docker.io/shekhawatsanjay/flask-app:$sha"
+      - 2>&1
+      image: docker.io/shekhawatsanjay/prow-ci-test
+      volumeMounts:
+      - mountPath: /mnt/test-data-volume
+        name: argo-test-volume
+      workingDir: /mnt/test-data-volume/src/{{ .Values.repo_owner }}/{{ .Values.repo_name }}
+      env:
+      - name: DOCKER_HOST
+        value: 127.0.0.1
+      - name: docker_username
+        valueFrom:
+          secretKeyRef:
+            name: docker-creds
+            key: username
+      - name: docker_password
+        valueFrom:
+          secretKeyRef:
+            name: docker-creds
+            key: password
+    sidecars:
+    - name: dind
+      image: docker:17.10-dind
+      securityContext:
+        privileged: true
+      # mirrorVolumeMounts will mount the same volumes specified in the main container
+      # to the sidecar (including artifacts), at the same mountPaths. This enables
+      # dind daemon to (partially) see the same filesystem as the main container in
+      # order to use features such as docker volume binding.
+      mirrorVolumeMounts: true
+    name: build
+  - container:
+      command:
+      - sh
+      - -c
+      - 'sha=`git log -n 1 --pretty=format:"%H"` && helm upgrade flask-app ./helm_charts/flask-app --set image=docker.io/shekhawatsanjay/flask-app:$sha'
+      - 2>&1
+      image: docker.io/shekhawatsanjay/prow-ci-test
+      volumeMounts:
+      - mountPath: /mnt/test-data-volume
+        name: argo-test-volume
+      workingDir: /mnt/test-data-volume/src/{{ .Values.repo_owner }}/{{ .Values.repo_name }}
+    name: deploy
+  - name: exit-handler
+    steps:
+      - - name: clean-up-ressources
+          template: clean
+  - name: clean
+    container:
+      image: docker.io/shekhawatsanjay/prow-ci-test
+      command: ["bash", "-c", "echo 'cleaning resources'"]

@@ -1,0 +1,4 @@
+Thank you for installing {{ .Chart.Name }}.
+
+To check the testing argo workflow: {{ .Values.workflowname }} :
+argo get {{ .Values.workflowname }}
