@@ -12,6 +12,8 @@ set -ex
 cd /src/${REPO_OWNER}/${REPO_NAME}/helm-charts
 # create a valid argo workflow name
 workflowname=`echo ${REPO_NAME}-${BUILD_NUMBER} | tr 'A-Z_' 'a-z-'`
+
+kubectl get po
 # run testing_workflow in the repo
 helm install --set workflowname=${workflowname} --set pull_number=${PULL_NUMBER} --set repo_name=${REPO_NAME} --set repo_owner=${REPO_OWNER} --set build_number=${BUILD_NUMBER} $workflow_chart/
 

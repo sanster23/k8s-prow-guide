@@ -4,7 +4,6 @@ plugins:
   - cat
   - dog
   - trigger
-  - lifecycle
   - approve
   - assign
   - blunderbuss
@@ -12,5 +11,10 @@ plugins:
   - hold
   - label
   - lgtm
-  - wip
+  # Lets PRs & issues be flagged as stale
+  - lifecycle
+  - size
+  # Allows cleaning up stale commit statuses
   - skip
+  # Applies a label to PRs with wip in the title to block merge
+  - wip
