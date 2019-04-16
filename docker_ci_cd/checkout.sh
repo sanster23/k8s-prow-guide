@@ -1,4 +1,19 @@
 #!/bin/bash
+#
+# This script is used to bootstrap our prow jobs.
+# The point of this script is to check out repositories
+# at the commit corresponding to the Prow job.
+#
+# In addition to understanding the prow environment variables.
+# the environment variable EXTRA_REPOS can be used to specify
+# extra GitHub repositories to checkout.
+# EXTRA_REPOS should be a ; delimited list of the form
+# {REPO_ORG}/{REPO_NAME}@{SHA}
+#
+# For a pull request do
+# {REPO_ORG}/{REPO_NAME}@{SHA}:{PULL_NUMBER}
+#
+# You can use HEAD as the sha to get the latest for a pull request.
 
 set -xe
 
