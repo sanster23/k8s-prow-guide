@@ -4,6 +4,7 @@ sinker:
   max_prowjob_age: 48h
   max_pod_age: 30m
 
+
 # All the Tide configurations
 tide:
   queries:
