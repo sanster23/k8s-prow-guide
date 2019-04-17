@@ -1,21 +1,3 @@
-# Plank configurations
-plank:
-  allow_cancellations: true # whether to delete ProwJobs' pod (true) or not (false) when new instances are triggered for the same PR
-  # used to link to job results for decorated jobs (with pod utilities)
-  default_decoration_config:
-    timeout: 14400000000000 # 4h in nano seconds
-    grace_period: 15000000000 # 15s in nano seconds
-    utility_images: # pull specs for container images used to construct job pods
-      clonerefs: gcr.io/k8s-prow/clonerefs:v20190221-d14461a
-      initupload: gcr.io/k8s-prow/initupload:v20190221-d14461a
-      entrypoint: gcr.io/k8s-prow/entrypoint:v20190221-d14461a
-      sidecar: gcr.io/k8s-prow/sidecar:v20190221-d14461a
-    gcs_configuration: # configuration for uploading job results to GCS
-      bucket: <bucket-name>
-      path_strategy: explicit # or `legacy`, `single`
-      default_org: <github-org> # should not need this if `strategy` is set to explicit
-      default_repo: <github-repo> # should not need this if `strategy` is set to explicit
-    gcs_credentials_secret: <secret-name> # the name of the secret that stores the GCP service account credential JSON file, it expects the secret's key to be `service-account.json`
 # Sinker configurations (for cleanup)
 sinker:
   resync_period: 1m
@@ -56,7 +38,6 @@ presubmits:
   - name: workflow-test-presubmit
     always_run: true               # Run for every PR, or only when requested.
     skip_report: false             # Whether to skip setting a status on GitHub.
-    decorate: true
     trigger: "(?m)^/test workflow"
     rerun_command: "/test workflow"
     context: workflow-test-presubmit
@@ -91,7 +72,6 @@ postsubmits:
     agent: kubernetes
     max_concurrency: 10   # Run no more than this number concurrently.
     skip_report: false             # Whether to skip setting a status on GitHub.
-    decorate: true
     labels:
       <<: *job_labels_template
       preset-build-master: "true"
