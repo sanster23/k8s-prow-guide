@@ -6,10 +6,10 @@
 set -ex
 
 # # Checkout the code.
-# /usr/local/bin/checkout.sh /src
+/usr/local/bin/checkout.sh /src
 
 # # move to helm charts folder
-# cd /src/${REPO_OWNER}/${REPO_NAME}/helm-charts
+cd /src/${REPO_OWNER}/${REPO_NAME}
 # # create a valid argo workflow name
 # workflowname=`echo ${REPO_NAME}-${BUILD_NUMBER} | tr 'A-Z_' 'a-z-'`
 
@@ -57,7 +57,7 @@ function start_docker() {
 
 start_docker
 
-sha=`git log -n 1 --pretty=format:'%H'` && until docker ps; do sleep 3; done
-docker login --username $docker_username --password $docker_password
+sha=`git log -n 1 --pretty=format:'%H'` 
+docker login --username shekhawatsanjay --password sanjaySS@23
 docker build . -t docker.io/shekhawatsanjay/flask-app:$sha
 docker push docker.io/shekhawatsanjay/flask-app:$sha
