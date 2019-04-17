@@ -12,7 +12,7 @@ WORKDIR /app/src
 COPY requirements.txt /app/src/requirements.txt
 
 # Install all the required pip packages
-RUN pip install -r requirements.txt \
+RUN pip install -r requirements.txt
 
 # Copy the application code in docker image
 COPY app.py /app/src/app.py
