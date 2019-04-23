@@ -8,28 +8,7 @@ set -ex
 # # Checkout the code.
 /usr/local/bin/checkout.sh /src
 
-# # move to helm charts folder
 cd /src/${REPO_OWNER}/${REPO_NAME}
-# # create a valid argo workflow name
-# workflowname=`echo ${REPO_NAME}-${BUILD_NUMBER} | tr 'A-Z_' 'a-z-'`
-
-# kubectl get po
-# # run testing_workflow in the repo
-# helm install --set workflowname=${workflowname} --set pull_number=${PULL_NUMBER} --set repo_name=${REPO_NAME} --set repo_owner=${REPO_OWNER} --set build_number=${BUILD_NUMBER} $workflow_chart/
-
-# # wait till workflow completes running
-# argo_status=$(argo get  ${workflowname} -o json | jq .status.phase)
-# while [ "$argo_status" == '"Running"' ]; do
-#   sleep 3;
-#   argo_status=$(argo get ${workflowname} -o json | jq .status.phase)
-# done
-
-
-# if [ "$argo_status" == '"Failed"' ]; then
-#   echo "testing workflow failed" >&2;
-#   argo get ${workflowname};
-#   exit 1;
-# fi
 
 function start_docker() {
     echo "Docker in Docker enabled, initializing..."
@@ -57,7 +36,11 @@ function start_docker() {
 
 start_docker
 
-sha=`git log -n 1 --pretty=format:'%H'` 
-docker login --username shekhawatsanjay --password sanjaySS@23
-docker build . -t docker.io/shekhawatsanjay/flask-app:$sha
-docker push docker.io/shekhawatsanjay/flask-app:$sha
+kubectl get po
+helm repo update
+helm install helm-charts/flask-app
+
+# sha=`git log -n 1 --pretty=format:'%H'` 
+# docker login --username shekhawatsanjay --password sanjaySS@23
+# docker build . -t docker.io/shekhawatsanjay/flask-app:$sha
+# docker push docker.io/shekhawatsanjay/flask-app:$sha

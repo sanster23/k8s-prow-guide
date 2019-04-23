@@ -5,6 +5,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV TERM=linux
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
+ENV HELM_VERSION="v2.9.0"
+ENV KUBECTL_VERSION="v1.13.0"
 
 # gcc & python-dev are needed so we can install crcmod for gsutil
 # also includes installations for Python3
@@ -39,19 +41,16 @@ RUN set -ex \
     /usr/share/doc \
     /usr/share/doc-base
 
-# Install Helm
-RUN wget -O /tmp/get_helm.sh \
-    https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get && \
-    chmod 700 /tmp/get_helm.sh && \
-    /tmp/get_helm.sh && \
-    rm /tmp/get_helm.sh
-
-# Initialize helm
-RUN helm init --client-only --service-account default
-
-
 # Install docker.
 RUN curl  https://get.docker.com/ | sh
+
+RUN curl -LO curl -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl &&\
+	chmod +x ./kubectl &&\
+	mv ./kubectl /usr/local/bin/kubectl &&\
+	wget -q https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm &&\
+	chmod +x /usr/local/bin/helm &&\
+	helm init --client-only
+
 
 COPY checkout.sh /usr/local/bin
 RUN chmod a+x /usr/local/bin/checkout.sh
