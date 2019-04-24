@@ -51,30 +51,20 @@ periodics:
 
 # Presubmit jobs
 presubmits:
-  sanster23/k8s_prow_flask_cicd:
+  aayushrangwala/k8s_prow_flask_cicd:
   - name: workflow-test-presubmit
-    always_run: true               # Run for every PR, or only when requested.
-    skip_report: false             # Whether to skip setting a status on GitHub.
-    trigger: "(?m)^/test workflow"
-    rerun_command: "/test workflow"
-    context: workflow-test-presubmit
-    agent: kubernetes
-    max_concurrency: 10
-    labels:
-      <<: *job_labels_template
-      preset-build-pr: "true"
-    spec:
-      serviceAccountName: "default"
-      containers:
-      - image: docker.io/shekhawatsanjay/prow-ci-test
-        args:
-        - "pre"
-        securityContext:
-          privileged: true
-        env:
-        - name: workflow_chart
-          value: testing_workflow
-
+    agent: knative-build
+    build_spec:
+      steps:
+      - name: first
+        image: busybox
+        args: ["echo", "hello"]
+      - name: second
+        image: busybox
+        args: ["echo", "world"]
+      - name: third
+        image: busybox
+        args: ["cat", "config.yaml"]
 
 # Postsubmit jobs
 postsubmits:
