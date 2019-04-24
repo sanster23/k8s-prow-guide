@@ -21,8 +21,8 @@ sinker:
 # All the Tide configurations
 tide:
   queries:
-  - orgs:
-    - sanster23
+  - repos:
+    - aayushrangwala/k8s_prow_flask_cicd 
     labels:
     - lgtm
     - approved
