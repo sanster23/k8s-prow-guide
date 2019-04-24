@@ -36,9 +36,21 @@ function start_docker() {
 
 start_docker
 
+HELM_VERSION="v2.9.0"
+KUBECTL_VERSION="v1.13.0"
+
+curl -LO curl -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl &&\
+chmod +x ./kubectl &&\
+mv ./kubectl /usr/local/bin/kubectl &&\
+wget -q https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm &&\
+chmod +x /usr/local/bin/helm &&\
+helm init --upgrade --service-account default
+
 kubectl get po
-helm repo update
-helm install helm-charts/flask-app
+# helm repo update
+# helm ls
+kubectl create -f flask_app_kube.yaml
+# helm install helm-charts/flask-app
 
 # sha=`git log -n 1 --pretty=format:'%H'` 
 # docker login --username shekhawatsanjay --password sanjaySS@23

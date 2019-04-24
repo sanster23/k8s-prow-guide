@@ -21,12 +21,12 @@ tide:
     - needs-rebase
 
 
-# Labels template
+# Default Labels template for jobs
 job_labels_template: &job_labels_template
   preset-dind-enabled: "true"
 
 periodics:
-- interval: 10m
+- interval: 30m
   agent: kubernetes
   name: echo-test
   spec:
@@ -34,6 +34,7 @@ periodics:
     - image: alpine
       command: ["/bin/date"]
 
+# Presubmit jobs
 presubmits:
   sanster23/k8s_prow_flask_cicd:
   - name: workflow-test-presubmit
@@ -48,6 +49,7 @@ presubmits:
       <<: *job_labels_template
       preset-build-pr: "true"
     spec:
+      serviceAccountName: "default"
       containers:
       - image: docker.io/shekhawatsanjay/prow-ci-test
         args:
@@ -57,7 +59,27 @@ presubmits:
         env:
         - name: workflow_chart
           value: testing_workflow
+  - name: prow-test-presubmit
+    always_run: true               # Run for every PR, or only when requested.
+    skip_report: false             # Whether to skip setting a status on GitHub.
+    trigger: "(?m)^/test prow"
+    rerun_command: "/test prow"
+    context: prow-test-presubmit
+    agent: kubernetes
+    max_concurrency: 10
+    labels:
+      <<: *job_labels_template
+      preset-build-pr: "true"
+    spec:
+      serviceAccountName: "default"
+      containers:
+      - image: docker.io/shekhawatsanjay/prow-ci-test:prow
+        args:
+        - "pre"
+        securityContext:
+          privileged: true
 
+# Postsubmit jobs
 postsubmits:
   sanster23/k8s_prow_flask_cicd:
   - name: test-postsubmit
@@ -77,12 +99,10 @@ postsubmits:
       <<: *job_labels_template
       preset-build-master: "true"
     spec:
+      serviceAccountName: "default"
       containers:
       - image: docker.io/shekhawatsanjay/prow-ci-test
         args:
         - "pre"
         securityContext:
           privileged: true
-        env:
-        - name: workflow_chart
-          value: release_workflow
