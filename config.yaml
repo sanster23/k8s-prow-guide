@@ -22,7 +22,7 @@ sinker:
 tide:
   queries:
   - repos:
-    - aayushrangwala/k8s_prow_flask_cicd
+    - aayushrangwala/k8s_prow_flask_cicd 
     labels:
     - lgtm
     - approved
