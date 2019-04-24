@@ -53,6 +53,5 @@ kubectl create -f flask_app_kube.yaml
 # helm install helm-charts/flask-app
 
 # sha=`git log -n 1 --pretty=format:'%H'` 
-# docker login --username shekhawatsanjay --password sanjaySS@23
 # docker build . -t docker.io/shekhawatsanjay/flask-app:$sha
 # docker push docker.io/shekhawatsanjay/flask-app:$sha
