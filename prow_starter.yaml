@@ -8,7 +8,12 @@ metadata:
   namespace: default
   name: plugins
 data:
-  plugins.yaml: ""
+  plugins.yaml: |
+    sanster23/k8s_prow_flask_cicd:
+    - size
+    - cat
+    - dog
+    - trigger
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -17,14 +22,23 @@ metadata:
   name: config
 data:
   config.yaml: |
-    periodics:
-    - interval: 10m
-      agent: kubernetes
-      name: echo-test
-      spec:
-        containers:
-        - image: alpine
-          command: ["/bin/date"]
+    presubmits:
+      sanster23/k8s_prow_flask_cicd:
+      - name: unit-tests
+        always_run: true
+        skip_report: false
+        context: unit-tests
+        trigger: "(?m)^/test this"
+        rerun_command: "/test this"
+        agent: kubernetes
+        spec:
+          containers:
+          - image: alpine
+            command:
+            - printenv
+        max_concurrency: 10
+        branches:
+        - master
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -134,7 +148,6 @@ spec:
       labels:
         app: hook
     spec:
-      serviceAccountName: "hook"
       terminationGracePeriodSeconds: 180
       containers:
       - name: hook
@@ -195,6 +208,7 @@ spec:
     app: hook
   ports:
   - port: 8888
+    nodePort: 30488
   type: NodePort
 ---
 apiVersion: extensions/v1beta1
@@ -213,7 +227,6 @@ spec:
       labels:
         app: plank
     spec:
-      serviceAccountName: "plank"
       containers:
       - name: plank
         image: gcr.io/k8s-prow/plank:v20190405-651ad49e6
@@ -248,7 +261,6 @@ spec:
       labels:
         app: sinker
     spec:
-      serviceAccountName: "sinker"
       containers:
       - name: sinker
         image: gcr.io/k8s-prow/sinker:v20190405-651ad49e6
@@ -280,7 +292,6 @@ spec:
       labels:
         app: deck
     spec:
-      serviceAccountName: "deck"
       terminationGracePeriodSeconds: 30
       containers:
       - name: deck
@@ -324,6 +335,7 @@ spec:
   ports:
   - port: 80
     targetPort: 8080
+    nodePort: 32710
   type: NodePort
 ---
 apiVersion: extensions/v1beta1
@@ -342,7 +354,6 @@ spec:
       labels:
         app: horologium
     spec:
-      serviceAccountName: "horologium"
       terminationGracePeriodSeconds: 30
       containers:
       - name: horologium
@@ -372,7 +383,6 @@ spec:
       labels:
         app: tide
     spec:
-      serviceAccountName: "tide"
       containers:
       - name: tide
         image: gcr.io/k8s-prow/tide:v20190405-651ad49e6
