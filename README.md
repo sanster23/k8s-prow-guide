@@ -75,7 +75,7 @@ enforcement, chat-ops via `/foo` style commands, and automatic PR merging.
 
 4. Create all the Prow components.
 
-    `kubectl create -f prow_starter.yaml`
+    `kubectl create -f ./prow_starter.yaml`
 
 5. Update all the jobs and plugins needed for the CI.
     ```bash
