@@ -1,5 +1,5 @@
 plugins:
-  sanster23/k8s_prow_flask_cicd:
+ aayushrangwala/k8s_prow_flask_cicd:
   - size
   - cat
   - dog
@@ -18,3 +18,23 @@ plugins:
   - skip
   # Applies a label to PRs with wip in the title to block merge
   - wip
+ madhurnawandar/k8s_prow_flask_cicd:
+  - size
+  - cat
+  - dog
+  - trigger
+  - approve
+  - assign
+  - blunderbuss
+  - help
+  - hold
+  - label
+  - lgtm
+  # Lets PRs & issues be flagged as stale
+  - lifecycle
+  - size
+  # Allows cleaning up stale commit statuses
+  - skip
+  # Applies a label to PRs with wip in the title to block merge
+  - wip
+
