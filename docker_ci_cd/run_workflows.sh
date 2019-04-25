@@ -44,7 +44,7 @@ chmod +x ./kubectl &&\
 mv ./kubectl /usr/local/bin/kubectl &&\
 wget -q https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm &&\
 chmod +x /usr/local/bin/helm &&\
-helm init --upgrade --service-account default
+#helm init --upgrade --service-account default
 
 kubectl get po
 # helm repo update
@@ -60,8 +60,14 @@ kubectl get service/flask-app-svc | CLUSTER_IP=awk {print $3}
 
 echo "Testing the deployed app..."
 
+res=`curl -s -I $CLUSTER_IP | grep HTTP/1.1 | awk {'print $2'}`
 
-curl $CLUSTER_IP:5000
+if [ $res -ne 200 ]
+then
+    echo "Error $res on $CLUSTER_IP, App not deployed properly"
+else
+   echo "PASSED"
+fi
 
 echo "Clearing the app"
 
