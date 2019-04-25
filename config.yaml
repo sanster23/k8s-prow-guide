@@ -68,7 +68,7 @@ presubmits:
 
 # Postsubmit jobs
 postsubmits:
-  sanster23/k8s_prow_flask_cicd:
+  aayushrangwala/k8s_prow_flask_cicd:
   - name: test-postsubmit
     agent: kubernetes
     spec:
