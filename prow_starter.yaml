@@ -9,7 +9,7 @@ metadata:
   name: plugins
 data:
   plugins.yaml: |
-    sanster23/k8s_prow_flask_cicd:
+    aayushrangwala/k8s_prow_flask_cicd:
     - size
     - cat
     - dog
@@ -23,7 +23,7 @@ metadata:
 data:
   config.yaml: |
     presubmits:
-      sanster23/k8s_prow_flask_cicd:
+      aayushrangwala/k8s_prow_flask_cicd:
       - name: unit-tests
         always_run: true
         skip_report: false

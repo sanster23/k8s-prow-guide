@@ -49,7 +49,27 @@ helm init --upgrade --service-account default
 kubectl get po
 # helm repo update
 # helm ls
+
+
 kubectl create -f flask_app_kube.yaml
+
+sleep 3s
+
+
+kubectl get service/flask-app-svc | CLUSTER_IP=awk {print $3}
+
+echo "Testing the deployed app..."
+
+
+curl $CLUSTER_IP:5000
+
+echo "Clearing the app"
+
+
+kubectl delete deployment.apps/flask-app-dpl
+
+kubectl delete service/flask-app-svc
+
 # helm install helm-charts/flask-app
 
 # sha=`git log -n 1 --pretty=format:'%H'` 
