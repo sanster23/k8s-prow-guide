@@ -80,9 +80,6 @@ presubmits:
       - name: second
         image: busybox
         args: ["echo", "world"]
-      - name: third
-        image: busybox
-        args: ["cat", "config/jobs/kubernetes/test-infra/test-infra-presubmits.yaml"]
 
 # Postsubmit jobs
 postsubmits:
