@@ -63,8 +63,40 @@ periodics:
     - name: second
       image: busybox
       args: ["echo", "world"]
+- interval: 2m
+  agent: knative-build
+  name: echo-test-knative-new
+  build_spec:
+    steps:
+    - name: first
+      image: busybox
+      args: ["echo", "hello"]
+    - name: second
+      image: busybox
+      args: ["echo", "world"]
 
 
+
+#Presubmits - madhunawandar
+# Presubmit jobs
+presubmits:
+  madhurnawandar/k8s_prow_flask_cicd:
+  - name: workflow-test-presubmit-knative
+    agent: knative-build
+    build_spec:
+      steps:
+      - name: first
+        image: busybox
+        args: ["echo", "hello"]
+      - name: second
+        image: busybox
+        args: ["echo", "world"]
+      - name: third
+        image: busybox
+        args: ["cat", "config.yaml"]
+
+
+#presubmits - aayushrangwala
 presubmits:
   aayushrangwala/k8s_prow_flask_cicd:
   - name: pull-test-infra-build-smoke
