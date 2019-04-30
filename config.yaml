@@ -21,6 +21,8 @@ sinker:
 # All the Tide configurations
 tide:
   queries:
+  - orgs:
+    - aayushrangwala
   - repos:
     - aayushrangwala/k8s_prow_flask_cicd 
     labels:
@@ -39,6 +41,7 @@ job_labels_template: &job_labels_template
   preset-dind-enabled: "true"
   preset-service-account: "true"
 
+
 # Periodic jobs 
 periodics:
 - interval: 30m
@@ -48,7 +51,33 @@ periodics:
     containers:
     - image: alpine
       command: ["/bin/date"]
+- interval: 1m
+  cluster: default
+  agent: knative-build
+  name: echo-test-knative-1
+  build_spec:
+    steps:
+    - name: first
+      image: busybox
+      args: ["echo", "hello"]
+    - name: second
+      image: busybox
+      args: ["echo", "world"]
+- interval: 2m
+  agent: knative-build
+  name: echo-test-knative-new
+  build_spec:
+    steps:
+    - name: first
+      image: busybox
+      args: ["echo", "hello"]
+    - name: second
+      image: busybox
+      args: ["echo", "world"]
 
+
+
+#Presubmits - madhunawandar
 # Presubmit jobs
 presubmits:
   madhurnawandar/k8s_prow_flask_cicd:
@@ -67,30 +96,22 @@ presubmits:
         args: ["cat", "config.yaml"]
 
 
+#presubmits - aayushrangwala
 presubmits:
   aayushrangwala/k8s_prow_flask_cicd:
-  - name: workflow-test-presubmit
+  - name: pull-test-infra-build-smoke
+    cluster: default
+    agent: knative-build
     always_run: true               # Run for every PR, or only when requested.
-    skip_report: false             # Whether to skip setting a status on GitHub.
-    trigger: "(?m)^/test workflow"
-    rerun_command: "/test workflow"
-    context: workflow-test-presubmit
-    agent: kubernetes
-    max_concurrency: 10
-    labels:
-      <<: *job_labels_template
-      preset-build-pr: "true"
-    spec:
-      serviceAccountName: "default"
-      containers:
-      - image: docker.io/shekhawatsanjay/prow-ci-test
-        args:
-        - "pre"
-        securityContext:
-          privileged: true
-        env:
-        - name: workflow_chart
-          value: testing_workflow
+    skip_report: false             # Whether to skip setting a status on GitHub
+    build_spec:
+      steps:
+      - name: first
+        image: busybox
+        args: ["echo", "hello"]
+      - name: second
+        image: busybox
+        args: ["echo", "world"]
 
 # Postsubmit jobs
 postsubmits:
