@@ -129,7 +129,7 @@ metadata:
   labels:
     app: hook
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -296,7 +296,7 @@ metadata:
   labels:
     app: deck
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -315,6 +315,7 @@ spec:
           - --tide-url=http://tide/
           - --hook-url=http://hook:8888/plugin-help
           - --job-config-path=/etc/job-config
+          - --spyglass=true
         ports:
           - name: http
             containerPort: 8080

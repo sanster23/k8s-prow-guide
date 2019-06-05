@@ -22,3 +22,12 @@ push-image:
 
 .PHONY: ci-release
 ci-release: build build-image push-image
+
+
+.PHONY: update-config
+update-config:
+	kubectl create configmap config --from-file=config.yaml=prow/config.yaml --dry-run -o yaml | kubectl replace configmap config -f -
+
+.PHONY: update-config
+update-plugins:
+	kubectl create configmap plugins --from-file=plugins.yaml=prow/plugins.yaml --dry-run -o yaml | kubectl replace configmap plugins -f -

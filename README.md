@@ -1,71 +1,73 @@
-# k8s_prow_flask_cicd
+# PROW - CI in Kubernetes way
 
-### PROW - CI/CD the Kubernetes way
+This repo is intended for just a getting started guide for Prow. Since the official documentation of Prow misses a lot of gaps.
 
-Prow is a Kubernetes based CI/CD system. Jobs can be triggered by various types of events and report their status to
+Prow is a Kubernetes based CI system that has been getting a lot of traction for some time now.
+Jobs can be triggered by various types of events and report their status to
 many different services. In addition to job execution, Prow provides GitHub automation in the form of policy
 enforcement, chat-ops via `/foo` style commands, and automatic PR merging.
 
-#### Prow Components
+## Prow Components
 
 * **Hook**
-    * This is the heart of Prow.
-    * Responds to github events and dispatches them to respective plugins.
-    * Hooks plugins are used to trigger jobs , implement 'slash' commands, post ot Slack and many more.
-    * Plugins provide a great amount of extensibility.
-    * Support for external plugins.
+  * This is the heart of Prow.
+  * Responds to github events and dispatches them to respective plugins.
+  * Hooks plugins are used to trigger jobs , implement 'slash' commands, post ot Slack and many more.
+  * Plugins provide a great amount of extensibility.
+  * Support for external plugins.
 
 * **Horologium**
-    * Responsible for triggering all the periodic jobs.
+  * Responsible for triggering all the periodic jobs.
 
 * **Plank**
-    * Controller that manages job execution and lifecycle of K8s jobs.
-    * Looks for jobs created by prow with agent Kubernetes.
-    * Starts the jobs.
-    * Updates jobs state.
-    * Terminates duplicate pre-submit jobs.
+  * Controller that manages job execution and lifecycle of K8s jobs.
+  * Looks for jobs created by prow with agent Kubernetes.
+  * Starts the jobs.
+  * Updates jobs state.
+  * Terminates duplicate pre-submit jobs.
 
 * **Sinker**
-    * Cleans up.
-    * Deletes completed prow jobs.
-    * Ensuring to kep the most recent completed periodic job.
-    * Removes old completed pods.
+  * Cleans up.
+  * Deletes completed prow jobs.
+  * Ensuring to kep the most recent completed periodic job.
+  * Removes old completed pods.
 
 * **Deck**
-    * Provides a view of recent prow jobs.
-    * Help on plugins and commands.
-    * Status of merge automation (provided by Tide).
-    * Dashboard for PR authors.
+  * Provides a view of recent prow jobs.
+  * Help on plugins and commands.
+  * Status of merge automation (provided by Tide).
+  * Dashboard for PR authors.
 
 * **Tide**
-    * Merge automation.
-    * Batches and retests a group of PRs against latest HEAD.
-    * Merge the changes.
+  * Merge automation.
+  * Batches and retests a group of PRs against latest HEAD.
+  * Merge the changes.
 
+### Possible jobs in Prow
 
-##### Possible jobs in Prow
-- presubmit
-- postsubmit
-- periodic
-- batch
+* presubmit
+* postsubmit
+* periodic
+* batch
 
-    > Possible states of a job
-    - triggered
-    - pending
-    - success
-    - failure
-    - aborted
-    - error
+> Possible states of a job
 
-##### Deploy you own Prow cluster for continuous integration
+* triggered
+* pending
+* success
+* failure
+* aborted
+* error
+
+### Deploy you own Prow cluster for continuous integration
+
 1. Create a bot account. For info [look here](https://stackoverflow.com/questions/29177623/what-is-a-bot-account-on-github).
-
 
 2. Create an oauth2 token from the github gui for the bot account.  
 
     `echo "PUT_TOKEN_HERE" > prow-bot-oauth2`
 
-    `kubectl create secret generic oauth-token --from-file=oauth=prow-bot-oauth2`
+    `kubectl create secret generic oauth-token --from-file=oauth=oauth-token`
 
 3. Create an openssl token to be used with the Hook.
 
@@ -78,6 +80,7 @@ enforcement, chat-ops via `/foo` style commands, and automatic PR merging.
     `kubectl create -f prow_starter.yaml`
 
 5. Update all the jobs and plugins needed for the CI.
+
     ```bash
     update-config:
         kubectl create configmap config --from-file=config.yaml=config.yaml --dry-run -o yaml | kubectl replace configmap config -f -
@@ -85,21 +88,19 @@ enforcement, chat-ops via `/foo` style commands, and automatic PR merging.
     update-plugins:
         kubectl create configmap plugins --from-file=plugins.yaml=plugins.yaml --dry-run -o yaml | kubectl replace configmap plugins -f -
     ```
-6. Create a webhook to the github repository and use ultrahook.
 
-    Install `ultrahook`
+6. For creating a webhook in github repo and pointing it to the local machine use Ultrahook. 
+
+    Install [Ultrahook](http://www.ultrahook.com/)
 
     ```bash
-    echo "api_key: CCUs4r8diUCh4upO2EG5p1WpsNUfo0Ef" > ~/.ultrahook
-    gem install ultrahook
+    echo "api_key: <API_KEY_ULTRAHOOK>" > ~/.ultrahook
     ```
-
-    `ultrahook github http://192.168.99.100:31367/hook`
 
     `ultrahook github http://<MINIKUBE_IP>:<HOOK_NODE_PORT>/hook`
 
-    this will give you a publicly accessible endpoint (in my case)
+    this will give you a publicly accessible endpoint (in my case): <http://github.sanster23.ultrahook.com>
 
-    http://github.sanster23.ultrahook.com
 7. Create a docker hub credentials secret in k8s, this will help us to use credentials to build and push images to docker registry.
+
   `kubectl create secret generic docker-creds --from-literal=username=<USERNAME> --from-literal=password=<PASSWORD>`

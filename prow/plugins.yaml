@@ -12,19 +12,19 @@ config_updater:
 
 plugins:
   sanster23/k8s_prow_flask_cicd:
-    - approve
-    - assign
-    - cat
-    - dog
-    - heart
-    - help
-    - hold
-    - label
-    - lgtm
-    - lifecycle
-    - size
-    - shrug
-    - skip
-    - trigger
-    - wip
-    - config-updater
+  - approve
+  - assign
+  - cat
+  - dog
+  - heart
+  - help
+  - hold
+  - label
+  - lgtm
+  - lifecycle
+  - size
+  - shrug
+  - skip
+  - trigger
+  - wip
+  - config-updater
