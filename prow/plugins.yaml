@@ -11,7 +11,7 @@ config_updater:
 
 
 plugins:
-  trilioData/k8s-triliovault:
+  sanster23/k8s_prow_flask_cicd:
     - approve
     - assign
     - cat
@@ -27,8 +27,4 @@ plugins:
     - skip
     - trigger
     - wip
-
-  trilioData/k8s-test-infra:
-    - approve
-    - assign
     - config-updater

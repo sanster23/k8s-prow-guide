@@ -9,10 +9,9 @@ sinker:
 tide:
   queries:
   - orgs:
-    - trilioData
+    - sanster23
   - repos:
-    - trilioData/k8s-triliovault
-    - trilioData/k8s-test-infra
+    - sanster23/k8s_prow_flask_cicd
     labels:
     - lgtm
     - approved
