@@ -39,8 +39,8 @@ deck:
 plank:
   allow_cancellations: true # whether to delete ProwJobs' pod (true) or not (false) when new instances are triggered for the same PR
   # used to link to job results for decorated jobs (with pod utilities)
-  job_url_template: 'https://192.168.99.100:32710/view/gcs/triliok8s/{{if eq .Spec.Type "presubmit"}}pr-logs/pull{{else if eq .Spec.Type "batch"}}pr-logs/pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/{{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/{{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/'
-  job_url_prefix: 'https://192.168.99.100:32710/view/gcs/'
+  job_url_template: 'http://192.168.99.100:32710/view/gcs/triliok8s/{{if eq .Spec.Type "presubmit"}}pr-logs/pull{{else if eq .Spec.Type "batch"}}pr-logs/pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/{{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/{{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/'
+  job_url_prefix: 'http://192.168.99.100:32710/view/gcs/'
   default_decoration_config:
     utility_images: # pull specs for container images used to construct job pods
       clonerefs: gcr.io/k8s-prow/clonerefs:v20190221-d14461a
@@ -104,6 +104,15 @@ presubmits:
         - "echo"
         args:
         - "The artifacts dir is $(ARTIFACTS)"
+  - name: pull-job-ls
+    always_run: true
+    decorate: true
+    spec:
+      containers:
+      - image: alpine
+        command:
+        - "/bin/ls"
+        
 #   - name: workflow-test-presubmit
 #     always_run: true               # Run for every PR, or only when requested.
 #     skip_report: false             # Whether to skip setting a status on GitHub.
