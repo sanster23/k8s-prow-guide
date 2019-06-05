@@ -1,0 +1,24 @@
+# Sinker configurations (for cleanup)
+sinker:
+  resync_period: 1m
+  max_prowjob_age: 48h
+  max_pod_age: 10h
+
+
+# All the Tide configurations
+tide:
+  queries:
+  - orgs:
+    - trilioData
+  - repos:
+    - trilioData/k8s-triliovault
+    - trilioData/k8s-test-infra
+    labels:
+    - lgtm
+    - approved
+    missingLabels:
+    - do-not-merge
+    - do-not-merge/hold
+    - do-not-merge/work-in-progress
+    - needs-ok-to-test
+    - needs-rebase

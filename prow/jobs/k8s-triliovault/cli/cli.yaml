@@ -1,0 +1,9 @@
+# Periodic jobs 
+# periodics:
+# - interval: 2m
+#   agent: kubernetes
+#   name: echo-test-cli
+#   spec:
+#     containers:
+#     - image: alpine
+#       command: ["/bin/date"]

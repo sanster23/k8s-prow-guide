@@ -1,0 +1,77 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: prow-build
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate # replace, do not scale up
+  selector:
+    matchLabels:
+      app: prow-build
+  template:
+    metadata:
+      labels:
+        app: prow-build
+    spec:
+      serviceAccount: prow-build # build_rbac.yaml
+      containers:
+      - name: build
+        image: gcr.io/k8s-prow/build:v20190424-3f037d559
+        args:
+        - --config=/etc/prow-config/config.yaml
+        volumeMounts:
+        - mountPath: /etc/prow-config
+          name: prow-config
+          readOnly: true
+      volumes:
+      - name: prow-config
+        configMap:
+          name: config
+---          
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: prow-build
+  namespace: default
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: prow-build
+rules:
+- apiGroups:
+  - build.knative.dev
+  resources:
+  - builds
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - watch
+- apiGroups:
+  - prow.k8s.io
+  resources:
+  - prowjobs
+  - prowjobs/status
+  verbs:
+  - get
+  - list
+  - watch
+  - update
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: prow-build
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prow-build
+subjects:
+- kind: ServiceAccount
+  name: prow-build
+  namespace: default

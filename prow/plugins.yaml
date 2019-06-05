@@ -1,0 +1,34 @@
+config_updater:
+  config_file: prow/config.yaml
+  plugin_file: prow/plugins.yaml
+  maps:
+    prow/jobs/**/*.yaml:
+      name: job-config
+    prow/config.yaml:
+      name: config
+    prow/plugins.yaml:
+      name: plugins
+
+
+plugins:
+  trilioData/k8s-triliovault:
+    - approve
+    - assign
+    - cat
+    - dog
+    - heart
+    - help
+    - hold
+    - label
+    - lgtm
+    - lifecycle
+    - size
+    - shrug
+    - skip
+    - trigger
+    - wip
+
+  trilioData/k8s-test-infra:
+    - approve
+    - assign
+    - config-updater

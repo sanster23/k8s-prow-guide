@@ -1,0 +1,9 @@
+# Periodic jobs 
+# periodics:
+# - interval: 1m
+#   agent: kubernetes
+#   name: workload-date
+#   spec:
+#     containers:
+#     - image: alpine
+#       command: ["/bin/date"]
