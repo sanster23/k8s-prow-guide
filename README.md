@@ -79,18 +79,16 @@ enforcement, chat-ops via `/foo` style commands, and automatic PR merging.
 
     `kubectl create -f prow_starter.yaml`
 
-5. Update all the jobs and plugins needed for the CI.
+5. Update all the jobs and plugins needed for the CI (rules mentioned in the [Makefile](https://github.com/sanster23/k8s_prow_flask_cicd/blob/master/Makefile)).
+    Use commands:
 
     ```bash
-    update-config:
-        kubectl create configmap config --from-file=config.yaml=config.yaml --dry-run -o yaml | kubectl replace configmap config -f -
+    make update-config
 
-    update-plugins:
-        kubectl create configmap plugins --from-file=plugins.yaml=plugins.yaml --dry-run -o yaml | kubectl replace configmap plugins -f -
+    make update-plugins
     ```
 
-6. For creating a webhook in github repo and pointing it to the local machine use Ultrahook. 
-
+6. For creating a webhook in github repo and pointing it to the local machine use Ultrahook.
     Install [Ultrahook](http://www.ultrahook.com/)
 
     ```bash

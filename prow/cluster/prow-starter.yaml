@@ -316,6 +316,7 @@ spec:
           - --hook-url=http://hook:8888/plugin-help
           - --job-config-path=/etc/job-config
           - --spyglass=true
+          - --gcs-credentials-file=/etc/github/service-account.json
         ports:
           - name: http
             containerPort: 8080
@@ -326,6 +327,9 @@ spec:
         - name: job-config
           mountPath: /etc/job-config
           readOnly: true
+        - name: gcs-creds
+          mountPath: /etc/github
+          readOnly: true          
         livenessProbe:
           httpGet:
             path: /healthz
@@ -346,6 +350,9 @@ spec:
       - name: job-config
         configMap:
           name: job-config
+      - name: gcs-creds
+        secret:
+          secretName: gcs-sa
 ---
 apiVersion: v1
 kind: Service
