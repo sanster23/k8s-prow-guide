@@ -36,17 +36,22 @@ deck:
   tide_update_period: 1s
 
 # Plank configurations
-# plank:
-#   allow_cancellations: true # whether to delete ProwJobs' pod (true) or not (false) when new instances are triggered for the same PR
-#   # used to link to job results for decorated jobs (with pod utilities)
-#   default_decoration_config:
-#     timeout: 14400000000000 # 4h in nano seconds
-#     grace_period: 15000000000 # 15s in nano seconds
-#     utility_images: # pull specs for container images used to construct job pods
-#       clonerefs: gcr.io/k8s-prow/clonerefs:v20190221-d14461a
-#       initupload: gcr.io/k8s-prow/initupload:v20190221-d14461a
-#       entrypoint: gcr.io/k8s-prow/entrypoint:v20190221-d14461a
-#       sidecar: gcr.io/k8s-prow/sidecar:v20190221-d14461a
+plank:
+  allow_cancellations: true # whether to delete ProwJobs' pod (true) or not (false) when new instances are triggered for the same PR
+  # used to link to job results for decorated jobs (with pod utilities)
+  job_url_template: 'https://192.168.99.100:32710/view/gcs/triliok8s/{{if eq .Spec.Type "presubmit"}}pr-logs/pull{{else if eq .Spec.Type "batch"}}pr-logs/pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/{{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/{{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/'
+  job_url_prefix: 'https://192.168.99.100:32710/view/gcs/'
+  default_decoration_config:
+    utility_images: # pull specs for container images used to construct job pods
+      clonerefs: gcr.io/k8s-prow/clonerefs:v20190221-d14461a
+      initupload: gcr.io/k8s-prow/initupload:v20190221-d14461a
+      entrypoint: gcr.io/k8s-prow/entrypoint:v20190221-d14461a
+      sidecar: gcr.io/k8s-prow/sidecar:v20190221-d14461a
+    gcs_configuration: # configuration for uploading job results to GCS
+      bucket: triliok8s
+      path_strategy: explicit # or `legacy`, `single`
+    gcs_credentials_secret: gcs-sa
+
 
 # Sinker configurations (for cleanup)
 sinker:
@@ -87,8 +92,18 @@ periodics:
       command: ["/bin/date"]
 
 # Presubmit jobs
-# presubmits:
-#   sanster23/k8s_prow_flask_cicd:
+presubmits:
+  sanster23/k8s_prow_flask_cicd:
+  - name: pull-job
+    always_run: true
+    decorate: true
+    spec:
+      containers:
+      - image: alpine
+        command:
+        - "echo"
+        args:
+        - "The artifacts dir is $(ARTIFACTS)"
 #   - name: workflow-test-presubmit
 #     always_run: true               # Run for every PR, or only when requested.
 #     skip_report: false             # Whether to skip setting a status on GitHub.
