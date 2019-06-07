@@ -1,6 +1,0 @@
-Thank you for installing {{ .Chart.Name }}.
-
-To check status of the app: {{ .Values.appname }} :
-kubectl get deployment {{ .Values.appname }}-dpl
-to see the exposed public ip of the app
-kubectl get svc {{ .Values.appname }}-svc

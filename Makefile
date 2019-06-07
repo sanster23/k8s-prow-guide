@@ -1,33 +1,46 @@
-APP_NAME = flask-app
-IMG = $(DOCKER_PUSH_REPOSITORY)$(DOCKER_PUSH_DIRECTORY)/$(APP_NAME)
-TAG = $(DOCKER_TAG)
 
-.PHONY: test
-test:
-	python testapp.py
+GO_APP_BINARY ?= main
 
-.PHONY: clean
+DOCKER_REPO ?= shekhawatsanjay
+IMAGE ?= go-hello-world
+VERSION ?= $(shell date +v%Y%m%d)-$(shell git describe --tags --always --dirty)
+
+all: test build
+
 clean:		## Clear all the .pyc/.pyo files and virtual env files.
-	find . -name '*.pyc' -exec rm --force {} +
-	find . -name '*.pyo' -exec rm --force {} +
+	go clean
+	rm -f $(GO_APP_BINARY)
 
-.PHONY: build-image
+test:
+	go test -v -race -cover ./...
+
+build:
+	go build -v main.go
+
+run: build
+	./$(GO_APP_BINARY)
+
 build-image:
-	docker build -t $(APP_NAME):latest .
+	docker build --cache-from docker.io/$(DOCKER_REPO)/$(IMAGE):latest \
+		-t docker.io/$(DOCKER_REPO)/$(IMAGE):$(VERSION) \
+		-t docker.io/$(DOCKER_REPO)/$(IMAGE):latest .
 
-.PHONY: push-image
+
 push-image:
-	docker tag $(APP_NAME) $(IMG):$(TAG)
-	docker push $(IMG):$(TAG)
+	docker push docker.io/$(PROJECT)/$(IMAGE):latest
+	docker push docker.io/$(PROJECT)/$(IMAGE):$(VERSION)
 
-.PHONY: ci-release
-ci-release: build build-image push-image
+ci-release: clean test build build-image push-image
+
+.PHONY: clean test build-image push-image ci-release
 
 
-.PHONY: update-config
 update-config:
 	kubectl create configmap config --from-file=config.yaml=prow/config.yaml --dry-run -o yaml | kubectl replace configmap config -f -
 
-.PHONY: update-config
 update-plugins:
 	kubectl create configmap plugins --from-file=plugins.yaml=prow/plugins.yaml --dry-run -o yaml | kubectl replace configmap plugins -f -
+
+deploy-prow: clean test
+
+.PHONY: update-config update-plugins deploy-prow
