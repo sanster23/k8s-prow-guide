@@ -1,9 +1,4 @@
-#
-# Dockerfile for Sample Python Flask Hello World application
-#
 FROM python:3.5
-
-MAINTAINER Sanjay Singh Shekhawat <shekhawatsanjay23@gmail.com>
 
 # Create working space
 WORKDIR /app/src

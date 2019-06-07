@@ -1,8 +1,8 @@
 # Sinker configurations (for cleanup)
 sinker:
   resync_period: 1m
-  max_prowjob_age: 48h
-  max_pod_age: 10h
+  max_prowjob_age: 1h
+  max_pod_age: 4h
 
 
 # All the Tide configurations
@@ -32,7 +32,6 @@ deck:
       - "buildlog"
       "artifacts/junit.*\\.xml":
       - "junit"
-    announcement: "The old job viewer, Gubernator, has been deprecated in favour of this page, Spyglass.{{if .ArtifactPath}} For now, the old page is <a href='https://gubernator.k8s.io/build/{{.ArtifactPath}}'>still available</a>.{{end}} Please send feedback to sig-testing."
   tide_update_period: 1s
 
 # Plank configurations
@@ -53,29 +52,6 @@ plank:
     gcs_credentials_secret: gcs-sa
 
 
-# Sinker configurations (for cleanup)
-sinker:
-  resync_period: 1m
-  max_prowjob_age: 4h
-  max_pod_age: 30m
-
-
-# All the Tide configurations
-tide:
-  queries:
-  - orgs:
-    - sanster23
-    labels:
-    - lgtm
-    - approved
-    missingLabels:
-    - do-not-merge
-    - do-not-merge/hold
-    - do-not-merge/work-in-progress
-    - needs-ok-to-test
-    - needs-rebase
-
-
 # Default Labels template for jobs
 job_labels_template: &job_labels_template
   preset-dind-enabled: "true"
@@ -88,8 +64,11 @@ periodics:
   name: echo-test
   spec:
     containers:
-    - image: alpine
-      command: ["/bin/date"]
+    - image: shekhawatsanjay/prow-golang-builder:latest
+      command:
+      - "make"
+      args:
+      - "test"
 
 # Presubmit jobs
 presubmits:
@@ -99,11 +78,11 @@ presubmits:
     decorate: true
     spec:
       containers:
-      - image: alpine
+      - image: shekhawatsanjay/prow-golang-builder:latest
         command:
-        - "echo"
+        - "make"
         args:
-        - "The artifacts dir is $(ARTIFACTS)"
+        - "test"
   - name: pull-job-ls
     always_run: true
     decorate: true
@@ -111,7 +90,9 @@ presubmits:
       containers:
       - image: alpine
         command:
-        - "/bin/ls"
+        - "echo"
+        args:
+        - "$GOPATH"
         
 #   - name: workflow-test-presubmit
 #     always_run: true               # Run for every PR, or only when requested.
