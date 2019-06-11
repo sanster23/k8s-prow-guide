@@ -65,7 +65,7 @@ enforcement, chat-ops via `/foo` style commands, and automatic PR merging.
 
 2. Create an oauth2 token from the github gui for the bot account.  
 
-    `echo "PUT_TOKEN_HERE" > prow-bot-oauth2`
+    `echo "PUT_TOKEN_HERE" > oauth-token`
 
     `kubectl create secret generic oauth-token --from-file=oauth=oauth-token`
 
