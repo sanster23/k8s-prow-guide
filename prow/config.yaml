@@ -1,7 +1,29 @@
+# Presets
+presets:
+  - labels:
+      preset-dind-enabled: "true"
+    env:
+    - name: DOCKER_IN_DOCKER_ENABLED
+      value: "true"
+  - labels:
+      preset-docker-credentials: "true"
+    env:
+    - name: DOCKER_USER
+      valueFrom:
+        secretKeyRef:
+          name: docker-creds
+          key: user
+    env:
+    - name: DOCKER_PASS
+      valueFrom:
+        secretKeyRef:
+          name: docker-creds
+          key: password      
+
 # Sinker configurations (for cleanup)
 sinker:
   resync_period: 1m
-  max_prowjob_age: 1h
+  max_prowjob_age: 4h
   max_pod_age: 4h
 
 
@@ -11,7 +33,7 @@ tide:
   - orgs:
     - sanster23
   - repos:
-    - sanster23/k8s_prow_flask_cicd
+    - sanster23/k8s-prow-guide
     labels:
     - lgtm
     - approved
@@ -50,98 +72,3 @@ plank:
       bucket: triliok8s
       path_strategy: explicit # or `legacy`, `single`
     gcs_credentials_secret: gcs-sa
-
-
-# Default Labels template for jobs
-job_labels_template: &job_labels_template
-  preset-dind-enabled: "true"
-  preset-service-account: "true"
-
-# Periodic jobs 
-periodics:
-- interval: 30m
-  agent: kubernetes
-  name: echo-test
-  spec:
-    containers:
-    - image: shekhawatsanjay/prow-golang-builder:latest
-      command:
-      - "make"
-      args:
-      - "test"
-
-# Presubmit jobs
-presubmits:
-  sanster23/k8s_prow_flask_cicd:
-  - name: pull-job
-    always_run: true
-    decorate: true
-    spec:
-      containers:
-      - image: shekhawatsanjay/prow-golang-builder:latest
-        command:
-        - "make"
-        args:
-        - "test"
-  - name: pull-job-ls
-    always_run: true
-    decorate: true
-    spec:
-      containers:
-      - image: alpine
-        command:
-        - "echo"
-        args:
-        - "$GOPATH"
-        
-#   - name: workflow-test-presubmit
-#     always_run: true               # Run for every PR, or only when requested.
-#     skip_report: false             # Whether to skip setting a status on GitHub.
-#     trigger: "(?m)^/test workflow"
-#     rerun_command: "/test workflow"
-#     context: workflow-test-presubmit
-#     agent: kubernetes
-#     max_concurrency: 10
-#     labels:
-#       <<: *job_labels_template
-#       preset-build-pr: "true"
-#     spec:
-#       serviceAccountName: "default"
-#       containers:
-#       - image: docker.io/shekhawatsanjay/prow-ci-test
-#         args:
-#         - "pre"
-#         securityContext:
-#           privileged: true
-#         env:
-#         - name: workflow_chart
-#           value: testing_workflow
-
-
-# # Postsubmit jobs
-# postsubmits:
-#   sanster23/k8s_prow_flask_cicd:
-#   - name: test-postsubmit
-#     agent: kubernetes
-#     spec:
-#       containers:
-#       - image: alpine
-#         command: ["/bin/printenv"]
-#     max_concurrency: 10   # Run no more than this number concurrently.
-#     branches:             # Only run against these branches.
-#     - master
-#   - name: release-postsubmit
-#     agent: kubernetes
-#     max_concurrency: 10   # Run no more than this number concurrently.
-#     skip_report: false             # Whether to skip setting a status on GitHub.
-#     labels:
-#       <<: *job_labels_template
-#       preset-build-master: "true"
-#     spec:
-#       serviceAccountName: "default"
-#       containers:
-#       - image: docker.io/shekhawatsanjay/prow-ci-test
-#         args:
-#         - "pre"
-#         securityContext:
-#           privileged: true

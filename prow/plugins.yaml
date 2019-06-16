@@ -11,7 +11,7 @@ config_updater:
 
 
 plugins:
-  sanster23/k8s_prow_flask_cicd:
+  sanster23/k8s-prow-guide:
   - approve
   - assign
   - cat

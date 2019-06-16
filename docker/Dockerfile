@@ -1,61 +1,61 @@
-FROM ubuntu:xenial
+# Basic setup for Prow jobs
 
-# Never prompt the user for choices on installation/configuration of packages
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TERM=linux
-ENV LC_ALL=C.UTF-8
-ENV LANG=C.UTF-8
-ENV HELM_VERSION="v2.9.0"
-ENV KUBECTL_VERSION="v1.13.0"
+FROM debian:stretch
 
-# gcc & python-dev are needed so we can install crcmod for gsutil
-# also includes installations for Python3
-RUN set -ex \
-    && apt-get update -yqq \
-    && apt-get install -yqq --no-install-recommends \
+ENV GO_VERSION=1.12.5 \
+    DOCKER_VERSION=18.06.1* \
+    GOLANGCI_VERSION="v1.16.0"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    curl \
-    locales \
-    wget \
     ca-certificates \
+    curl \
     git \
-    zip \
-    unzip \
-    gcc \
-    ssh \
     jq \
-    python-dev \
-    python-setuptools \
-    python-pip \
-    python3-dev \
-    python3-setuptools \
-    python3-pip \
-    && python -V \
-    && python3 -V \
-    && apt-get clean \
-    && rm -rf \
-    /var/lib/apt/lists/* \
-    /tmp/* \
-    /var/tmp/* \
-    /usr/share/man \
-    /usr/share/doc \
-    /usr/share/doc-base
+    dnsutils \
+    openssh-client \
+    python \
+    wget \
+    apt-transport-https \
+    gnupg2 \
+    shellcheck \
+    software-properties-common \
+    lsb-release \
+    && apt-get clean
 
-# Install docker.
-RUN curl  https://get.docker.com/ | sh
+# Docker-in-docker
+RUN curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg \
+    | apt-key add - && \
+    add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") \
+    $(lsb_release -cs) stable"
 
-RUN curl -LO curl -LO https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl &&\
-	chmod +x ./kubectl &&\
-	mv ./kubectl /usr/local/bin/kubectl &&\
-	wget -q https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm &&\
-	chmod +x /usr/local/bin/helm &&\
-	helm init --client-only
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends docker-ce=${DOCKER_VERSION} && \
+    sed -i 's/cgroupfs_mount$/#cgroupfs_mount\n/' /etc/init.d/docker
+
+# Move Docker's storage location
+RUN echo 'DOCKER_OPTS="${DOCKER_OPTS} --data-root=/docker-graph"' | \
+    tee --append /etc/default/docker
+RUN mkdir /docker-graph
 
 
-COPY checkout.sh /usr/local/bin
-RUN chmod a+x /usr/local/bin/checkout.sh
+# Install Go
+RUN wget -q https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz && \
+    tar xzf go${GO_VERSION}.linux-amd64.tar.gz && \
+    rm go${GO_VERSION}.linux-amd64.tar.gz && \
+    mv go /usr/local
 
-COPY run_workflows.sh /usr/local/bin
-RUN chmod a+x /usr/local/bin/run_workflows.sh
+ENV GOPATH /home/prow/go
+ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+RUN mkdir -p ${GOPATH}/bin && \
+    mkdir -p ${GOPATH}/src
 
-ENTRYPOINT ["/usr/local/bin/run_workflows.sh"]
+# Install GolangCi-lint
+RUN curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b "$GOPATH"/bin "$GOLANGCI_VERSION"
+
+# Install go cover tool
+RUN go get golang.org/x/tools/cmd/cover
+
+COPY ci-runner.sh /ci-runner.sh
+RUN chmod +x /ci-runner.sh

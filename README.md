@@ -79,7 +79,7 @@ enforcement, chat-ops via `/foo` style commands, and automatic PR merging.
 
     `kubectl create -f prow_starter.yaml`
 
-5. Update all the jobs and plugins needed for the CI (rules mentioned in the [Makefile](https://github.com/sanster23/k8s_prow_flask_cicd/blob/master/Makefile)).
+5. Update all the jobs and plugins needed for the CI (rules mentioned in the [Makefile](https://github.com/sanster23/k8s-prow-guide/blob/master/Makefile)).
     Use commands:
 
     ```bash

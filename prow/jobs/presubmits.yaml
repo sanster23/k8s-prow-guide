@@ -1,0 +1,67 @@
+# Default Labels template for jobs
+job_labels_template: &job_labels_template
+  preset-dind-enabled: "true"
+
+# Presubmit jobs
+presubmits:
+  sanster23/k8s-prow-guide:
+  - name: pull-job
+    always_run: true
+    decorate: true
+    spec:
+      containers:
+      - image: shekhawatsanjay/prow-golang-builder:latest
+        imagePullPolicy: IfNotPresent
+        command:
+        - "make"
+        args:
+        - "test"
+  - name: pull-job-ls
+    always_run: true
+    decorate: true
+    spec:
+      containers:
+      - image: alpine
+        imagePullPolicy: IfNotPresent
+        command:
+        - "echo"
+        args:
+        - "$GOPATH"
+  - name: knative-presubmit
+    always_run: true               # Run for every PR, or only when requested.
+    skip_report: false             # Whether to skip setting a status on GitHub.
+    trigger: "(?m)^/rerun all"
+    rerun_command: "/rerun all"
+    context: lint
+    agent: knative-build
+    decorate: true
+    labels:
+      <<: *job_labels_template
+    build_spec:
+      steps:
+      - name: list-job
+        image: alpine
+        imagePullPolicy: IfNotPresent
+        command:
+        - "/bin/ls"  
+        args:
+        - "-la"
+      - name: pwd-job
+        image: alpine
+        imagePullPolicy: IfNotPresent
+        command:
+        - pwd
+      - name: lint-job
+        image: shekhawatsanjay/prow-golang-builder
+        imagePullPolicy: IfNotPresent
+        command:
+        - "/ci-runner.sh"
+        args:
+        - "lint"
+      - name: test-job
+        image: shekhawatsanjay/prow-golang-builder
+        imagePullPolicy: IfNotPresent
+        command:
+        - "/ci-runner.sh"
+        args:
+        - "test"
