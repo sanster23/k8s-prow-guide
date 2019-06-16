@@ -1,4 +1,4 @@
-# PROW - CI in Kubernetes way
+# PROW - CI in Kubernetes
 
 This repo is intended for just a getting started guide for Prow. Since the official documentation of Prow misses a lot of gaps.
 
