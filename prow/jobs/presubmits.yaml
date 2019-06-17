@@ -13,9 +13,7 @@ presubmits:
       - image: shekhawatsanjay/prow-golang-builder:latest
         imagePullPolicy: IfNotPresent
         command:
-        - "make"
-        args:
-        - "test"
+        - "pwd"
   - name: pull-job-ls
     always_run: true
     decorate: true
@@ -27,41 +25,43 @@ presubmits:
         - "echo"
         args:
         - "$GOPATH"
-  - name: knative-presubmit
-    always_run: true               # Run for every PR, or only when requested.
-    skip_report: false             # Whether to skip setting a status on GitHub.
-    trigger: "(?m)^/rerun all"
-    rerun_command: "/rerun all"
-    context: lint
-    agent: knative-build
-    decorate: true
-    labels:
-      <<: *job_labels_template
-    build_spec:
-      steps:
-      - name: list-job
-        image: alpine
-        imagePullPolicy: IfNotPresent
-        command:
-        - "/bin/ls"  
-        args:
-        - "-la"
-      - name: pwd-job
-        image: alpine
-        imagePullPolicy: IfNotPresent
-        command:
-        - pwd
-      - name: lint-job
-        image: shekhawatsanjay/prow-golang-builder
-        imagePullPolicy: IfNotPresent
-        command:
-        - "/ci-runner.sh"
-        args:
-        - "lint"
-      - name: test-job
-        image: shekhawatsanjay/prow-golang-builder
-        imagePullPolicy: IfNotPresent
-        command:
-        - "/ci-runner.sh"
-        args:
-        - "test"
+  # - name: knative-presubmit
+  #   always_run: true               # Run for every PR, or only when requested.
+  #   skip_report: false             # Whether to skip setting a status on GitHub.
+  #   trigger: "(?m)^/rerun all"
+  #   rerun_command: "/rerun all"
+  #   context: lint
+  #   agent: knative-build
+  #   decorate: true
+  #   labels:
+  #     <<: *job_labels_template
+  #   build_spec:
+  #     steps:
+  #     - name: list-job
+  #       image: alpine
+  #       imagePullPolicy: IfNotPresent
+  #       command:
+  #       - "/bin/ls"  
+  #       args:
+  #       - "-la"
+  #     - name: pwd-job
+  #       image: alpine
+  #       # imagePullPolicy: IfNotPresent
+  #       command:
+  #       - pwd
+  #     - name: lint-job
+  #       image: shekhawatsanjay/prow-golang-builder
+  #       # imagePullPolicy: IfNotPresent
+  #       command:
+  #       - "/bin/sh"
+  #       args:
+  #       - "/ci-runner.sh"
+  #       - "test"
+  #     - name: test-job
+  #       image: shekhawatsanjay/prow-golang-builder
+  #       # imagePullPolicy: IfNotPresent
+  #       command:
+  #       - "/bin/sh"
+  #       args:
+  #       - "/ci-runner.sh"
+  #       - "test"
