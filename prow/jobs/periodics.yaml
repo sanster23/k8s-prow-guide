@@ -1,0 +1,12 @@
+# Periodic jobs
+
+# Sample job: This will echo `date` after every 10 minute interval via a k8s pod.
+periodics:
+- interval: 30m
+  agent: kubernetes
+  name: echo-test-cli
+  spec:
+    containers:
+    - image: alpine
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/date"]
