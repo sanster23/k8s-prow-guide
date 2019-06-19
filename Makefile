@@ -15,7 +15,7 @@ test:
 	go test -v -race -cover ./...
 
 build:
-	go build -v main.go
+	go build -v hello.go
 
 run: build
 	./$(GO_APP_BINARY)
@@ -42,7 +42,7 @@ update-plugins:
 	kubectl create configmap plugins --from-file=plugins.yaml=prow/plugins.yaml --dry-run -o yaml | kubectl replace configmap plugins -f -
 
 update-jobs:
-	kubectl create configmap job-config --from-file=prow/jobs/ --dry-run -o yaml | kubectl replace configmap plugins -f -
+	kubectl create configmap job-config --from-file=prow/jobs/ --dry-run -o yaml | kubectl replace configmap job-config -f -
 
 deploy-prow: clean test
 
