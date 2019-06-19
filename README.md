@@ -1,6 +1,6 @@
 # PROW - CI in Kubernetes
 
-This repo is intended for just a getting started guide for Prow.
+This repo is intended as a getting started guide for Prow.
 
 Prow is a Kubernetes based CI system that has been getting a lot of traction for some time now.
 Jobs can be triggered by various types of events and report their status to
