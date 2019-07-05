@@ -46,7 +46,7 @@ tide:
 
 deck:
   spyglass:
-    size_limit: 500e+6 # 500MB
+    size_limit: 500000000
     viewers:
       "started.json|finished.json":
       - "metadata"
@@ -58,16 +58,19 @@ deck:
 
 # Plank configurations
 plank:
-  allow_cancellations: true # whether to delete ProwJobs' pod (true) or not (false) when new instances are triggered for the same PR
   # used to link to job results for decorated jobs (with pod utilities)
   job_url_template: 'http://192.168.99.100:32710/view/gcs/triliok8s/{{if eq .Spec.Type "presubmit"}}pr-logs/pull{{else if eq .Spec.Type "batch"}}pr-logs/pull{{else}}logs{{end}}{{if .Spec.Refs}}{{if ne .Spec.Refs.Org ""}}/{{.Spec.Refs.Org}}_{{.Spec.Refs.Repo}}{{end}}{{end}}{{if eq .Spec.Type "presubmit"}}/{{with index .Spec.Refs.Pulls 0}}{{.Number}}{{end}}{{else if eq .Spec.Type "batch"}}/batch{{end}}/{{.Spec.Job}}/{{.Status.BuildID}}/'
   job_url_prefix: 'http://192.168.99.100:32710/view/gcs/'
+  allow_cancellations: true # AllowCancellations enables aborting presubmit jobs for commits that have been superseded by newer commits in Github pull requests.
+  max_concurrency: 50 # Limit of concurrent ProwJobs. Need to be adjusted depending of the cluster size.
   default_decoration_config:
-    utility_images: # pull specs for container images used to construct job pods
-      clonerefs: gcr.io/k8s-prow/clonerefs:v20190221-d14461a
-      initupload: gcr.io/k8s-prow/initupload:v20190221-d14461a
-      entrypoint: gcr.io/k8s-prow/entrypoint:v20190221-d14461a
-      sidecar: gcr.io/k8s-prow/sidecar:v20190221-d14461a
+    timeout: 7200000000000
+    grace_period: 600000000000
+    utility_images:
+      clonerefs: "gcr.io/k8s-prow/clonerefs:v20190312-abfe0e0"
+      initupload: "gcr.io/k8s-prow/initupload:v20190312-abfe0e0"
+      entrypoint: "gcr.io/k8s-prow/entrypoint:v20190312-abfe0e0"
+      sidecar: "gcr.io/k8s-prow/sidecar:v20190312-abfe0e0"
     gcs_configuration: # configuration for uploading job results to GCS
       bucket: triliok8s
       path_strategy: explicit # or `legacy`, `single`
