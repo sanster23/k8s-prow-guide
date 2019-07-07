@@ -2,6 +2,9 @@
 job_labels_template: &job_labels_template
   preset-dind-enabled: "true"
 
+branch_spec: &branch_spec
+- "^master$"
+
 # Presubmit jobs
 presubmits:
   sanster23/k8s-prow-guide:
@@ -38,3 +41,14 @@ presubmits:
         - "make"
         args:
         - "build"
+  - name: verify-file-perms
+    branches: *branch_spec
+    always_run: true
+    decorate: true
+    labels:
+      preset-service-account: "true"
+    spec:
+      containers:
+      - image: gcr.io/k8s-testimages/kubekins-e2e:v20190628-9455316-experimental
+        command:
+        - ./hack/verify-file-perms.sh
