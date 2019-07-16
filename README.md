@@ -102,6 +102,6 @@ enforcement, chat-ops via `/foo` style commands, and automatic PR merging.
 7. Create a docker hub credentials secret in k8s, this will help us to use credentials to build and push images to docker registry.
 
   `kubectl create secret generic docker-creds --from-literal=username=<USERNAME> --from-literal=password=<PASSWORD>`
-8. Create gcs creds secret
+8. Create gcs creds secret for plank to use in pod-utils
 
    `kubectl create secret generic gcs-sa --from-file=service-account.json=service-account.json`
