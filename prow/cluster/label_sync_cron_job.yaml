@@ -45,7 +45,7 @@ spec:
           volumes:
           - name: oauth
             secret:
-              secretName: oauth-token
+              secretName: oauth
           - name: config
             configMap:
               name: label-config

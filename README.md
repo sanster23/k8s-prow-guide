@@ -65,15 +65,15 @@ enforcement, chat-ops via `/foo` style commands, and automatic PR merging.
 
 2. Create an oauth2 token from the github gui for the bot account.  
 
-    `echo "PUT_TOKEN_HERE" > oauth-token`
+    `echo "PUT_TOKEN_HERE" > oauth`
 
-    `kubectl create secret generic oauth-token --from-file=oauth=oauth-token`
+    `kubectl create secret generic oauth --from-file=oauth=oauth`
 
 3. Create an openssl token to be used with the Hook.
 
-    `openssl rand -hex 20 > hmac-token`
+    `openssl rand -hex 20 > hmac`
 
-    `kubectl create secret generic hmac-token --from-file=hmac=hmac-token`
+    `kubectl create secret generic hmac --from-file=hmac=hmac`
 
 4. Create all the Prow components.
 

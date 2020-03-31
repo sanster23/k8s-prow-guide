@@ -44,6 +44,7 @@ update-plugins:
 update-jobs:
 	kubectl create configmap job-config --from-file=prow/jobs/ --dry-run -o yaml | kubectl replace configmap job-config -f -
 
-deploy-prow: clean test
+deploy-prow:
+	kubectl create -f prow/cluster/prow-starter.yaml
 
 .PHONY: update-config update-plugins update-jobs deploy-prow
